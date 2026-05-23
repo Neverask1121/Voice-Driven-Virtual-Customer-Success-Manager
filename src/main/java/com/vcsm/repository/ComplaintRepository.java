@@ -1,0 +1,28 @@
+package com.vcsm.repository;
+
+import com.vcsm.model.Complaint;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface ComplaintRepository extends JpaRepository<Complaint, Long> {
+
+    List<Complaint> findByStatus(Complaint.ComplaintStatus status);
+
+    List<Complaint> findByResidentName(String residentName);
+
+    List<Complaint> findByCategory(Complaint.ComplaintCategory category);
+
+    List<Complaint> findByApartmentNumber(String apartmentNumber);
+
+    long countByStatus(Complaint.ComplaintStatus status);
+
+    @Query("SELECT c.category, COUNT(c) FROM Complaint c GROUP BY c.category")
+    List<Object[]> countByCategory();
+
+    @Query("SELECT c FROM Complaint c ORDER BY c.createdAt DESC")
+    List<Complaint> findAllOrderByCreatedAtDesc();
+}

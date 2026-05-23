@@ -1,0 +1,131 @@
+package com.vcsm.controller;
+
+import com.vcsm.service.ComplaintService;
+import com.vcsm.service.EventService;
+import com.vcsm.service.OmnidimService;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@Controller
+public class WebController {
+
+    @Autowired
+    private ComplaintService complaintService;
+
+    @Autowired
+    private EventService eventService;
+
+    @Autowired
+    private OmnidimService omnidimService;
+
+    @GetMapping("/")
+    public String dashboard(Model model) {
+
+        Map<String, Long> stats = complaintService.getComplaintStats();
+
+        if (stats == null) {
+            stats = new HashMap<>();
+            stats.put("open", 0L);
+            stats.put("inProgress", 0L);
+            stats.put("resolved", 0L);
+        }
+
+        List<?> complaints = complaintService.getAllComplaints();
+
+        if (complaints == null) {
+            complaints = new ArrayList<>();
+        }
+
+        List<?> commands = omnidimService.getRecentCommands();
+
+        if (commands == null) {
+            commands = new ArrayList<>();
+        }
+
+        model.addAttribute("complaintStats", stats);
+
+        model.addAttribute("activeEvents",
+                eventService.getActiveEvents() != null
+                        ? eventService.getActiveEvents().size()
+                        : 0);
+
+        model.addAttribute("upcomingEvents",
+                eventService.getUpcomingEvents() != null
+                        ? eventService.getUpcomingEvents().size()
+                        : 0);
+
+        model.addAttribute("recentComplaints",
+                complaints.stream().limit(5).toList());
+
+        model.addAttribute("recentCommands",
+                commands.stream().limit(5).toList());
+
+        return "dashboard";
+    }
+
+    @GetMapping("/complaints")
+    public String complaints(Model model) {
+
+        model.addAttribute("complaints",
+                complaintService.getAllComplaints() != null
+                        ? complaintService.getAllComplaints()
+                        : new ArrayList<>());
+
+        model.addAttribute("stats",
+                complaintService.getComplaintStats() != null
+                        ? complaintService.getComplaintStats()
+                        : new HashMap<>());
+
+        return "complaints";
+    }
+
+    @GetMapping("/events")
+    public String events(Model model) {
+
+        model.addAttribute("events",
+                eventService.getAllEvents() != null
+                        ? eventService.getAllEvents()
+                        : new ArrayList<>());
+
+        model.addAttribute("upcomingCount",
+                eventService.getUpcomingEvents() != null
+                        ? eventService.getUpcomingEvents().size()
+                        : 0);
+
+        return "events";
+    }
+
+    @GetMapping("/analytics")
+    public String analytics(Model model) {
+
+        model.addAttribute("complaintStats",
+                complaintService.getComplaintStats() != null
+                        ? complaintService.getComplaintStats()
+                        : new HashMap<>());
+
+        model.addAttribute("categoryStats",
+                complaintService.getComplaintsByCategory() != null
+                        ? complaintService.getComplaintsByCategory()
+                        : new HashMap<>());
+
+        model.addAttribute("totalEvents",
+                eventService.getAllEvents() != null
+                        ? eventService.getAllEvents().size()
+                        : 0);
+
+        model.addAttribute("activeEvents",
+                eventService.getActiveEvents() != null
+                        ? eventService.getActiveEvents().size()
+                        : 0);
+
+        return "analytics";
+    }
+}

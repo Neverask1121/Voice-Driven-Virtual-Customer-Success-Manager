@@ -1,0 +1,93 @@
+package com.vcsm.service;
+
+import com.vcsm.model.VoiceCommand;
+import com.vcsm.repository.VoiceCommandRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+
+@Service
+public class OmnidimService {
+
+    private static final Logger log = Logger.getLogger(OmnidimService.class.getName());
+
+    @Value("${omnidim.api.key:YOUR_OMNIDIM_API_KEY}")
+    private String apiKey;
+
+    @Autowired
+    private VoiceCommandRepository voiceCommandRepository;
+
+    @Autowired
+    private ComplaintService complaintService;
+
+    @Autowired
+    private EventService eventService;
+
+    public Map<String, Object> processVoiceCommand(String transcript) {
+        log.info("Processing: " + transcript);
+        String lower = transcript.toLowerCase();
+        String intent = detectIntent(lower);
+        String response = switch (intent) {
+            case "FILE_COMPLAINT"  -> handleComplaintVoice(lower);
+            case "CHECK_COMPLAINT" -> handleStatusCheck();
+            case "EVENT_QUERY"     -> handleEventQuery();
+            case "ANALYTICS"       -> handleAnalytics();
+            default -> "I'm your Virtual Community Manager. I can help with complaints, events, and analytics!";
+        };
+
+        VoiceCommand cmd = new VoiceCommand();
+        cmd.setTranscript(transcript);
+        cmd.setIntent(intent);
+        cmd.setResponse(response);
+        cmd.setProcessed(true);
+        voiceCommandRepository.save(cmd);
+
+        return Map.of("intent", intent, "transcript", transcript, "response", response, "success", true);
+    }
+
+    private String detectIntent(String t) {
+        if (t.contains("status") || t.contains("check") || t.contains("my complaint")) return "CHECK_COMPLAINT";
+        if (t.contains("complaint") || t.contains("noise") || t.contains("maintenance")
+                || t.contains("broken") || t.contains("security") || t.contains("parking")) return "FILE_COMPLAINT";
+        if (t.contains("event") || t.contains("sports") || t.contains("cultural")
+                || t.contains("activity")) return "EVENT_QUERY";
+        if (t.contains("analytics") || t.contains("how many") || t.contains("total")
+                || t.contains("summary")) return "ANALYTICS";
+        return "UNKNOWN";
+    }
+
+    private String handleComplaintVoice(String t) {
+        String cat = "general";
+        if (t.contains("noise")) cat = "noise";
+        else if (t.contains("maintenance") || t.contains("broken")) cat = "maintenance";
+        else if (t.contains("security")) cat = "security";
+        else if (t.contains("parking")) cat = "parking";
+        return "Detected a " + cat + " issue. Please fill the complaint form with your name and details.";
+    }
+
+    private String handleStatusCheck() {
+        Map<String, Long> s = complaintService.getComplaintStats();
+        return "Currently " + s.get("open") + " open complaints and " + s.get("inProgress") + " in progress.";
+    }
+
+    private String handleEventQuery() {
+        var upcoming = eventService.getUpcomingEvents();
+        if (upcoming.isEmpty()) return "No upcoming events right now. Check back soon!";
+        StringBuilder sb = new StringBuilder("Upcoming: ");
+        upcoming.stream().limit(3).forEach(e -> sb.append(e.getName()).append(", "));
+        return sb.toString().replaceAll(", $", ". Visit Events section for details!");
+    }
+
+    private String handleAnalytics() {
+        Map<String, Long> s = complaintService.getComplaintStats();
+        return "Summary: " + s.get("total") + " complaints (" + s.get("open") + " open, "
+                + s.get("resolved") + " resolved). " + eventService.getActiveEvents().size() + " active events.";
+    }
+
+    public List<VoiceCommand> getRecentCommands() {
+        return voiceCommandRepository.findTop10ByOrderByCreatedAtDesc();
+    }
+}

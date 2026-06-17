@@ -15,9 +15,11 @@ import java.util.stream.Collectors;
 public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
+    private final com.vcsm.repository.UserRepository profileUserRepository;
 
-    public CustomUserDetailsService(UserRepository userRepository) {
+    public CustomUserDetailsService(UserRepository userRepository, com.vcsm.repository.UserRepository profileUserRepository) {
         this.userRepository = userRepository;
+        this.profileUserRepository = profileUserRepository;
     }
 
     @Override
@@ -25,12 +27,18 @@ public class CustomUserDetailsService implements UserDetailsService {
         AppUser user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
 
-        return User.withUsername(user.getUsername())
-                .password(user.getPasswordHash())
-                .authorities(user.getRoles().stream()
+        Long profileId = profileUserRepository.findByEmail(username)
+                .map(com.vcsm.model.User::getId)
+                .orElse(user.getId());
+
+        return new CustomUserDetails(
+                profileId,
+                user.getUsername(),
+                user.getPasswordHash(),
+                user.getRoles().stream()
                         .map(r -> new SimpleGrantedAuthority(r.name()))
-                        .collect(Collectors.toSet()))
-                .build();
+                        .collect(Collectors.toSet())
+        );
     }
 }
 

@@ -15,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -47,15 +46,19 @@ public class ComplaintController {
     @Operation(summary = "Get complaint by ID")
     @GetMapping("/{id}")
     public ResponseEntity<Complaint> getById(@PathVariable Long id) {
-        return complaintService.getComplaintById(id).map(ResponseEntity::ok)
+        return complaintService.getComplaintById(id)
+                .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @Operation(summary = "Get complaints by status")
     @GetMapping("/status/{status}")
     public ResponseEntity<List<Complaint>> getByStatus(@PathVariable String status) {
-        return ResponseEntity.ok(complaintService.getComplaintsByStatus(
-                Complaint.ComplaintStatus.valueOf(status.toUpperCase())));
+        return ResponseEntity.ok(
+                complaintService.getComplaintsByStatus(
+                        Complaint.ComplaintStatus.valueOf(status.toUpperCase())
+                )
+        );
     }
 
     @Operation(summary = "Update complaint status")
@@ -65,7 +68,9 @@ public class ComplaintController {
             @RequestParam String status,
             @RequestParam(required = false) String resolvedBy,
             @RequestParam(required = false) String notes) {
-        return ResponseEntity.ok(complaintService.updateStatus(id, status, resolvedBy, notes));
+        return ResponseEntity.ok(
+                complaintService.updateStatus(id, status, resolvedBy, notes)
+        );
     }
 
     @Operation(summary = "Delete complaint")
@@ -87,40 +92,43 @@ public class ComplaintController {
         return ResponseEntity.ok(complaintService.getComplaintsByCategory());
     }
 
-    // Get complaints by priority
-@GetMapping("/priority/{priority}")
-public ResponseEntity<List<Complaint>> getByPriority(@PathVariable String priority) {
-    return ResponseEntity.ok(complaintService.getComplaintsByPriority(priority.toUpperCase()));
-}
-
-// Update complaint priority manually
-@PutMapping("/{id}/priority")
-public ResponseEntity<Complaint> updatePriority(
-        @PathVariable Long id,
-        @RequestParam String priority) {
-    return ResponseEntity.ok(complaintService.updatePriority(id, priority.toUpperCase()));
-}
-
-// Get priority statistics
-@GetMapping("/stats/priority")
-public ResponseEntity<Map<String, Long>> getPriorityStats() {
-    List<Object[]> results = complaintRepository.countByPriority();
-    Map<String, Long> stats = new HashMap<>();
-    for (Object[] result : results) {
-        stats.put((String) result[0], (Long) result[1]);
+    @Operation(summary = "Get complaints by priority")
+    @GetMapping("/priority/{priority}")
+    public ResponseEntity<List<Complaint>> getByPriority(@PathVariable String priority) {
+        return ResponseEntity.ok(
+                complaintService.getComplaintsByPriority(priority.toUpperCase())
+        );
     }
-    return ResponseEntity.ok(stats);
-}
+
+    @Operation(summary = "Update complaint priority manually")
+    @PutMapping("/{id}/priority")
+    public ResponseEntity<Complaint> updatePriority(
+            @PathVariable Long id,
+            @RequestParam String priority) {
+        return ResponseEntity.ok(
+                complaintService.updatePriority(id, priority.toUpperCase())
+        );
+    }
+
+    @Operation(summary = "Get priority statistics")
+    @GetMapping("/stats/priority")
+    public ResponseEntity<Map<String, Long>> getPriorityStats() {
+        return ResponseEntity.ok(complaintService.getPriorityStats());
+    }
 
     @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<ErrorResponse> handleIllegalState(IllegalStateException ex, HttpServletRequest request) {
+    public ResponseEntity<ErrorResponse> handleIllegalState(
+            IllegalStateException ex,
+            HttpServletRequest request) {
+
         ErrorResponse error = new ErrorResponse(
-            HttpStatus.BAD_REQUEST.value(),
-            "Operation Failed",
-            ex.getMessage(),
-            ex.getMessage(),
-            request.getRequestURI()
+                HttpStatus.BAD_REQUEST.value(),
+                "Operation Failed",
+                ex.getMessage(),
+                ex.getMessage(),
+                request.getRequestURI()
         );
+
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 }

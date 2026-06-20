@@ -191,6 +191,7 @@ public String complaintsPage(
         model.addAttribute("page", complaintPage);
         model.addAttribute("stats", complaintService.getComplaintStats());
 
+
         return "complaints";
     }
 

@@ -142,6 +142,11 @@ public String liveDashboard() {
     return "live-dashboard";
 }
 
+@GetMapping("/translation")
+public String translation() {
+    return "translation-ui";
+}
+
     @GetMapping("/analytics")
     public String analytics(Model model) {
 
@@ -168,6 +173,16 @@ public String liveDashboard() {
         return "analytics";
     }
 
+    
+    @GetMapping("/blockchain-verify")
+public String blockchainVerify() {
+    return "blockchain-verify";
+}
+
+@GetMapping("/twilio-demo")
+public String twilioDemo() {
+    return "twilio-demo";
+}
     @GetMapping("/interaction-history")
     public String interactionHistory(Model model) {
         try {

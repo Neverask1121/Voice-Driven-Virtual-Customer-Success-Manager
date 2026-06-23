@@ -51,6 +51,7 @@ public class ComplaintService {
 
 
 
+
     private boolean isAdmin() {
         var auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated()) return false;
@@ -278,6 +279,7 @@ public class ComplaintService {
             log.warning("Failed to add block to blockchain: " + e.getMessage());
         }
 
+
         return updated;
     }
 
@@ -320,8 +322,21 @@ public class ComplaintService {
                 );
             }
 
+
         } catch (Exception e) {
             log.warning("Failed to log user activity: " + e.getMessage());
+        }
+
+        // Add to blockchain
+        try {
+            blockchainService.addBlock(updated, "PRIORITY_UPDATED");
+        } catch (Exception e) {
+            log.warning("Failed to add block to blockchain: " + e.getMessage());
+
+
+        } catch (Exception e) {
+            log.warning("Failed to log user activity: " + e.getMessage());
+
         }
 
         // Add to blockchain
@@ -343,6 +358,7 @@ public class ComplaintService {
             throw new AccessDeniedException("Only admins can delete complaints");
         }
 e
+
 
         Complaint complaint = complaintRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Complaint not found: " + id));

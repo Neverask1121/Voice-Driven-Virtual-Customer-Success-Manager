@@ -10,7 +10,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/predict")
-@CrossOrigin(origins = "*")
 public class PredictionController {
 
     @Autowired

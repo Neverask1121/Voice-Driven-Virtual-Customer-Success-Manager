@@ -46,7 +46,6 @@
     <version>4.9.5</version>
 </dependency>
 
-=
 <!-- Twilio SDK -->
 <dependency>
     <groupId>com.twilio.sdk</groupId>
@@ -56,14 +55,14 @@
 
 <!-- For XML processing (Twilio TwiML) -->
 <dependency>
-
     <groupId>javax.xml.bind</groupId>
     <artifactId>jaxb-api</artifactId>
     <version>2.3.1</version>
-
-<groupId>jakarta.xml.bind</groupId>
-<artifactId>jakarta.xml.bind-api</artifactId>
-<version>4.0.0</version>
+</dependency>
+<dependency>
+    <groupId>jakarta.xml.bind</groupId>
+    <artifactId>jakarta.xml.bind-api</artifactId>
+    <version>4.0.0</version>
 </dependency>
 
 <!-- OpenNLP for NLP -->
@@ -88,18 +87,6 @@
 </dependency>
 
 
-<!-- QR Code Generation -->
-<dependency>
-    <groupId>com.google.zxing</groupId>
-    <artifactId>core</artifactId>
-    <version>3.5.3</version>
-</dependency>
-<dependency>
-    <groupId>com.google.zxing</groupId>
-    <artifactId>javase</artifactId>
-    <version>3.5.3</version>
-</dependency>
-
 <!-- Bouncy Castle for hashing -->
 <dependency>
     <groupId>org.bouncycastle</groupId>
@@ -111,14 +98,6 @@
     <groupId>com.google.cloud</groupId>
     <artifactId>google-cloud-translate</artifactId>
     <version>2.6.0</version>
-</dependency>
-
-
-<!-- For audio processing -->
-<dependency>
-    <groupId>org.apache.commons</groupId>
-    <artifactId>commons-lang3</artifactId>
-    <version>3.12.0</version>
 </dependency>
 
 

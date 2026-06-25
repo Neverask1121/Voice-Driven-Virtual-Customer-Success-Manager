@@ -12,7 +12,6 @@ import java.util.List;
 
 @Repository
 public interface AuditLogRepository extends JpaRepository<AuditLog, Long> {
-    
     List<AuditLog> findAllByOrderByCreatedAtDesc();
     
     List<AuditLog> findByAdminOrderByCreatedAtDesc(User admin);

@@ -66,11 +66,11 @@ public class OmnidimService {
         // Log voice analytics
         try {
 
-            // User user = userRepository.findById(1L).orElse(null); // Replace with actual user
+            User user = userRepository.findById(1L).orElse(null); // Replace with actual user
 
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             String email = auth != null ? auth.getName() : null;
-            User user = null;
+            user = null;
             if (email != null) {
                 user = userRepository.findByEmail(email).orElse(null);
             }

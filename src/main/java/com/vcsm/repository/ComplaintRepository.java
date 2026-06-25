@@ -11,17 +11,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
-import org.springframework.data.jpa.domain.Specification;
-/*
-Page<Complaint> findAll(Specification<Complaint> spec, Pageable pageable);
-
-Page<Complaint> findAll(Pageable pageable);
-Page<Complaint> findByResidentUsername(String username, Pageable pageable);
-*/
-
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 @Repository
@@ -62,4 +51,8 @@ List<Long> findAllIds();
 
 @Query("SELECT c.id FROM Complaint c WHERE c.status = :status")
 List<Long> findIdsByStatus(@Param("status") Complaint.ComplaintStatus status);
+
+
+
+    Page<Complaint> findAll(Pageable pageable);
 }

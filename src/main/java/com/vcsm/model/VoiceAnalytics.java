@@ -58,8 +58,6 @@ public class VoiceAnalytics {
     public long getResponseTime() { return responseTime; }
     public void setResponseTime(long responseTime) { this.responseTime = responseTime; }
 
-
-
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }

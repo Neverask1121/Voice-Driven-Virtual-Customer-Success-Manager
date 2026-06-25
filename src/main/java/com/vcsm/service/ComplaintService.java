@@ -40,6 +40,8 @@ public class ComplaintService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private BlockchainService blockchainService;
 
 
     private boolean isAdmin() {
@@ -118,6 +120,15 @@ public class ComplaintService {
             log.warning("Failed to send notification: " + e.getMessage());
         }
 
+
+        // Add to blockchain
+        try {
+            blockchainService.addBlock(saved, "COMPLAINT_CREATED");
+        } catch (Exception e) {
+            log.warning("Failed to add block to blockchain: " + e.getMessage());
+        }
+
+
         return saved;
     }
 
@@ -129,7 +140,9 @@ public class ComplaintService {
         return complaintRepository.findByResidentUsernameOrderByCreatedAtDesc(username);
     }
 
+
     // Pagination method
+
     public Page<Complaint> getPaginatedComplaints(Pageable pageable) {
         if (isAdmin()) {
             return complaintRepository.findAll(pageable);
@@ -250,6 +263,15 @@ public class ComplaintService {
             log.warning("Failed to send notification: " + e.getMessage());
         }
 
+
+        // Add to blockchain
+        try {
+            blockchainService.addBlock(updated, "STATUS_UPDATED");
+        } catch (Exception e) {
+            log.warning("Failed to add block to blockchain: " + e.getMessage());
+        }
+
+
         return updated;
     }
 
@@ -269,6 +291,7 @@ public class ComplaintService {
         
         Complaint updated = complaintRepository.save(complaint);
 
+        // Log user activity
         try {
             User admin = userRepository.findByEmail(currentUsername()).orElse(null);
             if (admin != null) {
@@ -290,8 +313,17 @@ public class ComplaintService {
                     newPriority
                 );
             }
+
+
         } catch (Exception e) {
             log.warning("Failed to log user activity: " + e.getMessage());
+        }
+
+        // Add to blockchain
+        try {
+            blockchainService.addBlock(updated, "PRIORITY_UPDATED");
+        } catch (Exception e) {
+            log.warning("Failed to add block to blockchain: " + e.getMessage());
         }
 
         return updated;
@@ -302,6 +334,20 @@ public class ComplaintService {
             throw new AccessDeniedException("Only admins can delete complaints");
         }
 
+
+
+        Complaint complaint = complaintRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Complaint not found: " + id));
+
+        // Add to blockchain before deletion
+        try {
+            blockchainService.addBlock(complaint, "COMPLAINT_DELETED");
+        } catch (Exception e) {
+            log.warning("Failed to add block to blockchain: " + e.getMessage());
+        }
+
+
+        // Log user activity
         try {
             User admin = userRepository.findByEmail(currentUsername()).orElse(null);
             if (admin != null) {

@@ -3,25 +3,14 @@ package com.vcsm.controller;
 import com.vcsm.model.Complaint;
 import com.vcsm.service.ComplaintService;
 import com.vcsm.service.EventService;
-import com.vcsm.service.OmnidimService;
 import com.vcsm.service.InteractionService;
+import com.vcsm.service.OmnidimService;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-
-import org.springframework.data.domain.PageRequest;
-
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -52,6 +41,10 @@ public class WebController {
     public String landing() {
         return "landing";
     }
+    @GetMapping("/login")
+     public String login() {
+    return "login";
+    }
 
 
     @GetMapping("/chatbot")
@@ -75,6 +68,23 @@ public class WebController {
         return "onboarding";
     }
 
+
+
+    @GetMapping("/complaints")
+public String complaintsPage(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size,
+        Model model) {
+    
+    Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+    Page<Complaint> complaintPage = complaintService.getPaginatedComplaints(pageable);
+    
+    model.addAttribute("complaints", complaintPage.getContent());
+    model.addAttribute("page", complaintPage);
+    model.addAttribute("stats", complaintService.getComplaintStats());
+    
+    return "complaints";
+}
 
 
     @GetMapping("/voice-analytics")
@@ -134,44 +144,6 @@ public class WebController {
         return "dashboard";
     }
 
-    @GetMapping("/complaints")
-    public String complaintsPage(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) String status,
-            @RequestParam(required = false) String category,
-            @RequestParam(required = false) String priority,
-            @RequestParam(required = false) String startDate,
-            @RequestParam(required = false) String endDate,
-            Model model) {
-
-        Sort sort = Sort.by("createdAt").descending();
-        Pageable pageable = PageRequest.of(page, size, sort);
-
-        LocalDateTime start = null;
-        LocalDateTime end = null;
-        try {
-            if (startDate != null && !startDate.isEmpty()) {
-                start = LocalDateTime.parse(startDate + "T00:00:00");
-            }
-            if (endDate != null && !endDate.isEmpty()) {
-                end = LocalDateTime.parse(endDate + "T23:59:59");
-            }
-        } catch (Exception e) {
-            // Ignore date parsing errors
-        }
-
-        Page<Complaint> complaintPage = complaintService.searchComplaints(
-            keyword, status, category, priority, start, end, pageable);
-
-        model.addAttribute("complaints", complaintPage.getContent());
-        model.addAttribute("page", complaintPage);
-        model.addAttribute("stats", complaintService.getComplaintStats());
-
-        return "complaints";
-    }
-
     @GetMapping("/events")
     public String events(Model model) {
 
@@ -187,6 +159,23 @@ public class WebController {
 
         return "events";
     }
+
+    @GetMapping("/voice-cloning")
+    public String voiceCloning() {
+       return "voice-cloning-ui";
+    }
+
+    @GetMapping("/live-dashboard")
+public String liveDashboard() {
+    return "live-dashboard";
+}
+
+
+@GetMapping("/translation")
+public String translation() {
+    return "translation-ui";
+}
+
 
     @GetMapping("/analytics")
     public String analytics(Model model) {
@@ -214,6 +203,27 @@ public class WebController {
         return "analytics";
     }
 
+
+    
+    @GetMapping("/blockchain-verify")
+public String blockchainVerify() {
+    return "blockchain-verify";
+}
+
+
+@GetMapping("/offline")
+public String offline() {
+    return "offline";
+}
+
+
+@GetMapping("/twilio-demo")
+public String twilioDemo() {
+    return "twilio-demo";
+}
+
+
+
     @GetMapping("/interaction-history")
     public String interactionHistory(Model model) {
         try {
@@ -235,4 +245,6 @@ public class WebController {
         return "interaction-history";
 
     }
+
 }
+

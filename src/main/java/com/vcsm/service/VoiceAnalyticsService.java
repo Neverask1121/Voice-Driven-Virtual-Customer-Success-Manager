@@ -27,13 +27,13 @@ public class VoiceAnalyticsService {
 
     public Map<String, Object> getSummary() {
         Map<String, Object> stats = new LinkedHashMap<>();
-        
+
         long totalCommands = voiceAnalyticsRepository.count();
         stats.put("totalCommands", totalCommands);
-        
+
         long uniqueUsers = voiceAnalyticsRepository.getUniqueUsersCount();
         stats.put("uniqueUsers", uniqueUsers);
-        
+
         return stats;
     }
 
@@ -66,7 +66,6 @@ public class VoiceAnalyticsService {
         Double avgResponseTime = voiceAnalyticsRepository.getAverageResponseTime();
         stats.put("averageResponseTime", avgResponseTime != null ? Math.round(avgResponseTime) : 0);
         
-
         // Recent commands (last 7 days)
 
         LocalDateTime sevenDaysAgo = LocalDateTime.now().minusDays(7);

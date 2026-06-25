@@ -25,12 +25,6 @@
 
     <dependencies>
 
-    <!-- ElevenLabs API Client -->
-<dependency>
-    <groupId>com.elevenlabs</groupId>
-    <artifactId>elevenlabs-java</artifactId>
-    <version>1.0.0</version>
-</dependency>
 
 <!-- For audio processing -->
 <dependency>
@@ -46,7 +40,6 @@
     <version>4.9.5</version>
 </dependency>
 
-=
 <!-- Twilio SDK -->
 <dependency>
     <groupId>com.twilio.sdk</groupId>
@@ -56,14 +49,14 @@
 
 <!-- For XML processing (Twilio TwiML) -->
 <dependency>
-
     <groupId>javax.xml.bind</groupId>
     <artifactId>jaxb-api</artifactId>
     <version>2.3.1</version>
-
-<groupId>jakarta.xml.bind</groupId>
-<artifactId>jakarta.xml.bind-api</artifactId>
-<version>4.0.0</version>
+</dependency>
+<dependency>
+    <groupId>jakarta.xml.bind</groupId>
+    <artifactId>jakarta.xml.bind-api</artifactId>
+    <version>4.0.0</version>
 </dependency>
 
 <!-- OpenNLP for NLP -->
@@ -79,6 +72,20 @@
     <artifactId>spring-kafka</artifactId>
 </dependency>
 
+<!-- Web3j for Ethereum integration -->
+<dependency>
+    <groupId>org.web3j</groupId>
+    <artifactId>core</artifactId>
+    <version>4.9.5</version>
+</dependency>
+
+<!-- Smart contract support -->
+<dependency>
+    <groupId>org.web3j</groupId>
+    <artifactId>contract</artifactId>
+    <version>4.9.5</version>
+</dependency>
+
 <!-- MLflow for model tracking -->
 <dependency>
     <groupId>org.mlflow</groupId>
@@ -87,18 +94,6 @@
 
 </dependency>
 
-
-<!-- QR Code Generation -->
-<dependency>
-    <groupId>com.google.zxing</groupId>
-    <artifactId>core</artifactId>
-    <version>3.5.3</version>
-</dependency>
-<dependency>
-    <groupId>com.google.zxing</groupId>
-    <artifactId>javase</artifactId>
-    <version>3.5.3</version>
-</dependency>
 
 <!-- Bouncy Castle for hashing -->
 <dependency>
@@ -111,14 +106,6 @@
     <groupId>com.google.cloud</groupId>
     <artifactId>google-cloud-translate</artifactId>
     <version>2.6.0</version>
-</dependency>
-
-
-<!-- For audio processing -->
-<dependency>
-    <groupId>org.apache.commons</groupId>
-    <artifactId>commons-lang3</artifactId>
-    <version>3.12.0</version>
 </dependency>
 
 
@@ -224,10 +211,10 @@
 
         <!-- AWS S3 SDK for voice model uploads -->
         <dependency>
-            <groupId>software.amazon.awssdk</groupId>
-            <artifactId>s3</artifactId>
-            <version>2.25.60</version>
-        </dependency>
+           <groupId>software.amazon.awssdk</groupId>
+           <artifactId>s3</artifactId>
+           <version>2.25.53</version>
+      </dependency>
 
         <!-- WebSocket -->
         <dependency>

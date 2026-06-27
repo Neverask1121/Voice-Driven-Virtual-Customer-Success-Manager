@@ -11,9 +11,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import com.vcsm.model.VenueReservation;
 
 @Service
 public class OmnidimService {
@@ -43,6 +45,30 @@ public class OmnidimService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private SchedulingOptimizer schedulingOptimizer;
+
+    private final Map<Long, PendingBookingState> pendingBookings = new java.util.concurrent.ConcurrentHashMap<>();
+
+    public static class PendingBookingState {
+        private final String venueName;
+        private final LocalDateTime requestedStart;
+        private final LocalDateTime requestedEnd;
+        private final List<LocalDateTime[]> alternatives;
+
+        public PendingBookingState(String venueName, LocalDateTime requestedStart, LocalDateTime requestedEnd, List<LocalDateTime[]> alternatives) {
+            this.venueName = venueName;
+            this.requestedStart = requestedStart;
+            this.requestedEnd = requestedEnd;
+            this.alternatives = alternatives;
+        }
+
+        public String getVenueName() { return venueName; }
+        public LocalDateTime getRequestedStart() { return requestedStart; }
+        public LocalDateTime getRequestedEnd() { return requestedEnd; }
+        public List<LocalDateTime[]> getAlternatives() { return alternatives; }
+    }
 
     public Map<String, Object> processVoiceCommand(String transcript) {
         long startTime = System.currentTimeMillis();
@@ -101,6 +127,11 @@ public class OmnidimService {
     }
 
     private String detectIntent(String t) {
+        if (t.contains("book") || t.contains("reserve") || t.contains("schedule")) {
+            if (t.contains("hall") || t.contains("clubhouse") || t.contains("gym") || t.contains("venue")) {
+                return "BOOK_VENUE";
+            }
+        }
         if (t.contains("status") || t.contains("check") || t.contains("my complaint")) return "CHECK_COMPLAINT";
         if (t.contains("complaint") || t.contains("noise") || t.contains("maintenance")
                 || t.contains("broken") || t.contains("security") || t.contains("parking")) return "FILE_COMPLAINT";

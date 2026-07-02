@@ -5,6 +5,37 @@ let lastCommandId = null; // Store last command ID for feedback
 let recordingSeconds = 0;
 let recordingInterval = null;
 
+const STORAGE_KEY = "voiceConversationHistory";
+
+let conversationHistory =
+    JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+
+    function saveConversation() {
+    localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(conversationHistory)
+    );
+}
+
+function renderConversation() {
+    const container = document.getElementById("conversationHistory");
+
+    if (!container) return;
+
+    container.innerHTML = "";
+
+    conversationHistory.forEach(item => {
+        container.innerHTML += `
+            <div class="card mb-2">
+                <div class="card-body py-2">
+                    <strong>You:</strong> ${item.user}<br>
+                    <strong>Assistant:</strong> ${item.bot}
+                </div>
+            </div>
+        `;
+    });
+}
+
 function startVoice() {
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
         alert('Voice recognition not supported in this browser. Please use Chrome.');
@@ -23,50 +54,36 @@ function startVoice() {
     recognition.interimResults = false;
 
     recognition.onstart = () => {
-    isRecording = true;
-    recordingSeconds = 0;
-
-    document.getElementById('micBtn').classList.add('btn-danger', 'recording');
-    document.getElementById('micBtn').classList.remove('btn-purple');
-    document.getElementById('micIcon').className = 'fas fa-stop';
-
-    const timer = document.getElementById('recordingTimer');
-    const time = document.getElementById('recordingTime');
-
-    if (timer && time) {
-        timer.style.display = 'block';
-        time.textContent = '00:00';
-    }
-
-    if (recordingInterval) {
-        clearInterval(recordingInterval);
-         recordingInterval = null;
-    }
-
-    recordingInterval = setInterval(() => {
-        recordingSeconds++;
-
-        const minutes = String(Math.floor(recordingSeconds / 60)).padStart(2, '0');
-        const seconds = String(recordingSeconds % 60).padStart(2, '0');
-
-        if (time) {
-            time.textContent = `${minutes}:${seconds}`;
-        }
-    }, 1000);
-};
+        isRecording = true;
+        document.getElementById('micBtn').classList.add('btn-danger', 'recording');
+        document.getElementById('micBtn').classList.remove('btn-purple');
+        document.getElementById('micIcon').className = 'fas fa-stop';
+        if (typeof typingIndicator !== 'undefined') {
+    typingIndicator.showListening();
+}
+    };
 
     recognition.onresult = (event) => {
     const transcript = event.results[0][0].transcript;
     document.getElementById('voiceInput').value = transcript;
+
+    if (typeof typingIndicator !== 'undefined') {
+        typingIndicator.showProcessing();
+    }
+
     sendCommand();
 };
 
     recognition.onend = () => {
     isRecording = false;
 
-    document.getElementById('micBtn').classList.remove('btn-danger', 'recording');
-    document.getElementById('micBtn').classList.add('btn-purple');
-    document.getElementById('micIcon').className = 'fas fa-microphone';
+    recognition.onerror = (e) => {
+        console.error('Voice error:', e);
+        isRecording = false;
+        if (typeof typingIndicator !== 'undefined') {
+            typingIndicator.hide();
+        }
+    };
 
     if (recordingInterval) {
         clearInterval(recordingInterval);
@@ -140,6 +157,13 @@ async function sendCommand() {
         const responseDiv = document.getElementById('voiceResponse');
         const responseText = document.getElementById('responseText');
         responseText.textContent = data.response || 'Command processed successfully!';
+        conversationHistory.push({
+    user: transcript,
+    bot: data.response || 'Command processed successfully!'
+});
+
+saveConversation();
+renderConversation();
         responseDiv.classList.remove('d-none');
         
         // Handle offline local navigation matching
@@ -320,6 +344,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.key === 'Enter') sendCommand();
         });
     }
+    renderConversation();
 });
 
 // ===== QUICK COMPLAINT (Dashboard) =====
@@ -460,6 +485,8 @@ async function registerEvent(id) {
 
 }
 
+
+
 // ===== BULK OPERATIONS =====
 let selectedIds = [];
 
@@ -582,6 +609,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 });
+
+
+
 
 // ===== WEBSOCKET NOTIFICATIONS =====
 let stompClient = null;
@@ -745,4 +775,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 500);
 
 
-})};
+});
+
+
+
+
+

@@ -42,7 +42,7 @@ public class AuthService {
         String role = user.getRoles().stream()
             .findFirst()
             .map(Enum::name)
-            .orElse("ROLE_RESIDENT");
+            .orElse(UserRole.ROLE_RESIDENT.name());
         return new AuthResponse(token, null, user.getUsername(), role);
     }
 

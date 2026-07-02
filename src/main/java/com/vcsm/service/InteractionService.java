@@ -3,6 +3,7 @@ package com.vcsm.service;
 import com.vcsm.dto.InteractionDTO;
 import com.vcsm.model.Interaction;
 import com.vcsm.repository.InteractionRepository;
+import com.vcsm.security.model.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -32,7 +33,7 @@ public class InteractionService {
         var auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated()) return false;
         return auth.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+                .anyMatch(a -> a.getAuthority().equals(UserRole.ROLE_ADMIN.name()));
     }
 
     /**

@@ -9,10 +9,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
-class NotificationServiceTest {
+class SmartRouterTest {
 
     @InjectMocks
-    private NotificationService notificationService;
+    private SmartRouter smartRouter;
 
     @BeforeEach
     void setUp() {
@@ -20,6 +20,6 @@ class NotificationServiceTest {
 
     @Test
     void contextLoads() {
-        assertNotNull(notificationService);
+        assertNotNull(smartRouter);
     }
 }

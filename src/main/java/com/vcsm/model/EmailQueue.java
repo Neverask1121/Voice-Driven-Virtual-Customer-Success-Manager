@@ -1,6 +1,7 @@
 package com.vcsm.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -21,12 +22,16 @@ public class EmailQueue {
     @JoinColumn(name = "event_id")
     private Event event;
 
+    @NotBlank
+    @Email
     @Column(name = "recipient_email", nullable = false)
     private String recipientEmail;
 
+    @NotBlank
     @Column(name = "subject", nullable = false)
     private String subject;
 
+    @NotBlank
     @Column(name = "message", columnDefinition = "TEXT", nullable = false)
     private String message;
 

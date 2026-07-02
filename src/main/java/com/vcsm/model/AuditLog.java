@@ -1,6 +1,7 @@
 package com.vcsm.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -19,10 +20,12 @@ public class AuditLog {
 
     @Column(name = "admin_email")
     private String adminEmail;
-
+    
+    @NotBlank
     @Column(name = "action_type", nullable = false)
-    private String actionType;
-
+    private String actionType; // UPDATE_STATUS, DELETE_COMPLAINT, UPDATE_PRIORITY, BULK_RESOLVE, etc.
+    
+    @NotBlank
     @Column(name = "target_type")
     private String targetType;
 

@@ -12,7 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.*;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -28,9 +28,11 @@ public class Interaction {
     private String customerName;
 
     @NotBlank(message = "Interaction type is required")
+    @Pattern(regexp = "PHONE|EMAIL|CHAT|IN_PERSON")
     private String interactionType; // VOICE_CALL, TEXT_CHAT, EMAIL, etc.
 
     @NotBlank(message = "Summary is required")
+    @Size(max = 2000)
     @Column(length = 500)
     private String summary;
 
@@ -51,6 +53,7 @@ public class Interaction {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Email
     private String customerEmail;
     private String customerPhone;
 

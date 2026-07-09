@@ -42,8 +42,6 @@ public class VoiceController {
     private final com.vcsm.service.EventRegistrationService eventRegistrationService;
 
     @PostMapping("/command")
-    public ResponseEntity<Map<String, Object>> command(@Valid @RequestBody VoiceCommandRequest request) {
-        String transcript = request.getTranscript();
     public ResponseEntity<?> command(@Valid @RequestBody Map<String, String> body) {
         String transcript = body.get("transcript");
         

@@ -4,6 +4,7 @@ import com.vcsm.model.Complaint;
 import com.vcsm.model.User;
 import com.vcsm.repository.ComplaintRepository;
 import com.vcsm.repository.UserRepository;
+import com.vcsm.security.model.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -31,7 +32,7 @@ public class BulkComplaintService {
     private boolean isAdmin() {
         var auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated()) return false;
-        return auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        return auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals(UserRole.ROLE_ADMIN.name()));
     }
 
     private String currentUsername() {

@@ -44,6 +44,8 @@ public class AuthService {
             .map(Enum::name)
             .orElse("ROLE_RESIDENT");
         return new AuthResponse(token, refreshToken, user.getUsername(), role);
+            .orElse(UserRole.ROLE_RESIDENT.name());
+        return new AuthResponse(token, null, user.getUsername(), role);
     }
 
     public AuthResponse login(AppUser user) {

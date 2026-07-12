@@ -108,6 +108,23 @@ public class WaitlistService {
             } catch (Exception e) {
                 log.error("Failed to process waitlist entry {}: {}", entry.getId(), e.getMessage(), e);
             }
+            
+            if (firstWaitlist.isEmpty()) {
+                break;
+            }
+            
+            EventWaitlist entry = firstWaitlist.get();
+            User user = entry.getUser();
+            
+            try {
+                emailService.sendEventSlotAvailable(event, user);
+                entry.setNotifiedAt(LocalDateTime.now());
+                entry.setExpiresAt(LocalDateTime.now().plusHours(24));
+                waitlistRepository.save(entry);
+                log.info("✅ Waitlist notification sent to user: {}", user.getEmail());
+            } catch (Exception e) {
+                log.error("Failed to send waitlist notification to user {}: {}", user.getEmail(), e.getMessage(), e);
+            }
         }
     }
     
